@@ -1,0 +1,101 @@
+---
+import { getCollection } from 'astro:content';
+import '../styles/global.css';
+
+// Get all city editions and sort by date (newest first)
+const cities = await getCollection('cities');
+const sortedCities = cities.sort((a, b) => new Date(b.data.date).getTime() - new Date(a.data.date).getTime());
+const latestEdition = sortedCities[0];
+const pastEditions = sortedCities.slice(1);
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>City Magazine - A new city, every morning.</title>
+    <meta name="description" content="Daily magazine featuring one random city from around the world. Discover art, food, and culture." />
+  </head>
+  <body>
+    <main>
+      <!-- Latest Edition Hero -->
+      {latestEdition && (
+        <div class="hero-card">
+          <img 
+            class="hero-image" 
+            src={latestEdition.data.heroImage} 
+            alt={`${latestEdition.data.city}, ${latestEdition.data.country}`}
+            loading="eager"
+          />
+          <div class="hero-overlay">
+            <div class="label">Latest Edition</div>
+            <h1 class="hero-title">{latestEdition.data.title}</h1>
+            <div style="margin-top: 2rem;">
+              <a href={`/city/${latestEdition.id}/`} class="youtube-link">
+                Explore {latestEdition.data.city}
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div class="container">
+        <!-- Past Editions Grid -->
+        {pastEditions.length > 0 && (
+          <section>
+            <h2 class="section-header">Past Journeys</h2>
+            <div class="edition-grid">
+              {pastEditions.map((edition) => (
+                <a href={`/city/${edition.id}/`} class="edition-card">
+                  <img 
+                    class="edition-image" 
+                    src={edition.data.heroImage} 
+                    alt={`${edition.data.city}, ${edition.data.country}`}
+                    loading="lazy"
+                  />
+                  <div class="edition-content">
+                    <h3 class="edition-title">{edition.data.title}</h3>
+                    <div class="edition-date">
+                      {new Date(edition.data.date).toLocaleDateString('en-US', { 
+                        year: 'numeric', 
+                        month: 'long', 
+                        day: 'numeric' 
+                      })}
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <!-- About Section -->
+        <section class="section" style="text-align: center; background-color: var(--cream); border-radius: 8px; padding: 3rem;">
+          <h2 class="section-header">About City Magazine</h2>
+          <p style="font-size: 1.2em; max-width: 600px; margin: 0 auto;">
+            Every morning, we invite you to discover a new corner of our world. From the bustling streets of Tokyo to the quiet canals of Venice, each edition celebrates the unique spirit, art, cuisine, and culture that makes every city extraordinary.
+          </p>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+          A new city, every morning.
+        </footer>
+      </div>
+    </main>
+
+    <script>
+      // Add loaded class for lazy images when they load
+      document.querySelectorAll('img[loading="lazy"]').forEach(img => {
+        if (img.complete) {
+          img.classList.add('loaded');
+        } else {
+          img.addEventListener('load', () => {
+            img.classList.add('loaded');
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "city-magazine",
+  "type": "module",
+  "version": "0.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "deploy": "astro build && wrangler pages deploy dist --project-name city-magazine --commit-dirty=true"
+  },
+  "dependencies": {
+    "astro": "^5.17.1"
+  }
+}
